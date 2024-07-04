@@ -2,8 +2,8 @@ package vulnerabilities;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.Scanner;
 
 public class VulnerableApp {
@@ -16,12 +16,13 @@ public class VulnerableApp {
 
         try {
             // Connect to the database (replace with your actual database connection details)
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydatabase", "root", "password");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydatabase", "root", "mySuperSecretPassword123!");
 
-            // Vulnerability: Using Statement with string concatenation for SQL query
-            Statement statement = connection.createStatement();
-            String query = "SELECT * FROM users WHERE username = '" + username + "'";
-            ResultSet resultSet = statement.executeQuery(query);
+            // Fix: Use PreparedStatement to prevent SQL injection
+            String query = "SELECT * FROM users WHERE username = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, username);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
             // Process the result
             if (resultSet.next()) {

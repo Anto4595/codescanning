@@ -1,12 +1,11 @@
-// This Java example intentionally includes vulnerabilities for educational purposes.
-
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
+import java.security.SecureRandom;
 import java.util.Scanner;
 
-public class VulnerableApp {
+public class SecureApp {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -16,11 +15,13 @@ public class VulnerableApp {
         String password = scanner.nextLine();
 
         try {
-            // Vulnerability 1: SQL Injection
-            // Using string concatenation in SQL queries can lead to SQL injection if inputs are not sanitized.
+            // Fixed Vulnerability 1: Prevent SQL Injection
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/mydb", "user", "pass");
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'");
+            String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, username);
+            statement.setString(2, password);
+            ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
                 System.out.println("Login successful!");
@@ -28,14 +29,14 @@ public class VulnerableApp {
                 System.out.println("Login failed!");
             }
 
-            // Vulnerability 2: Insecure Randomness
-            // Using Math.random() for security-critical applications can lead to predictability.
-            double randomNumber = Math.random();
-            System.out.println("Your security token: " + randomNumber);
+            // Fixed Vulnerability 2: Secure Randomness
+            SecureRandom random = new SecureRandom();
+            double secureRandomNumber = random.nextDouble();
+            System.out.println("Your security token: " + secureRandomNumber);
 
-            // Vulnerability 3: Sensitive Data Exposure
-            // Printing sensitive information like passwords to logs can lead to information leakage.
-            System.out.println("Debug - User login attempt: " + username + " with password: " + password);
+            // Addressed Vulnerability 3: Sensitive Data Exposure
+            // Avoid logging sensitive information like passwords.
+            System.out.println("Debug - User login attempt: " + username);
 
         } catch (Exception e) {
             e.printStackTrace();

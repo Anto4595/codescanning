@@ -12,7 +12,7 @@ public class VulnerableApp {
         // Scanner for user input
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter username:");
-        String username = scanner.nextLine();
+        String username = scanner.nextLine()
 
         try {
             // Connect to the database (replace with your actual database connection details)
